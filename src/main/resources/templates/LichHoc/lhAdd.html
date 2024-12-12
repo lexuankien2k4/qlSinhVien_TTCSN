@@ -28,8 +28,9 @@
     </section>
 
     <!-- Main content -->
+    <div class="form-container">
     <h1>Thêm Lịch Học</h1>
-     <form th:action="@{/lich-hoc/add}" th:object="${lichHocDTO}" method="post">
+     <form th:action="@{/lichhoc/add}" th:object="${lichHocDTO}" method="post">
         <input type="hidden" th:field="*{maLichHoc}"/>
 
         <div>
@@ -79,6 +80,7 @@
     </form>
 
     <!-- /.content -->
+    </div>
   </div>
   <!-- /.content-wrapper -->
 <div th:replace="admin/fragments/footer :: footer"></div>

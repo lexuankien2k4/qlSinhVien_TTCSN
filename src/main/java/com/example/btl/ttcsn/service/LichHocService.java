@@ -19,34 +19,64 @@ import com.example.btl.ttcsn.repository.MonHocRepository;
 
 @Service
 public class LichHocService {
-	@Autowired
-    private LichHocRepository lichHocRepository;
+	 @Autowired
+	    private LichHocRepository lichHocRepository;
 
-    @Autowired
-    private LopHocRepository lopHocRepository;
+	    @Autowired
+	    private LopHocRepository lopHocRepository;
 
-    @Autowired
-    private MonHocRepository monHocRepository;
+	    @Autowired
+	    private MonHocRepository monHocRepository;
 
     @Autowired
     private GiangVienRepository giangVienRepository;
-    
+
     // Lấy danh sách tất cả Lịch Học
     public List<LichHocDTO> getAllLichHoc() {
         List<LichHoc> lichHocList = lichHocRepository.findAll();
         return lichHocList.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    // Thêm hoặc cập nhật Lịch Học
-    public LichHocDTO saveLichHoc(LichHocDTO lichHocDTO) {
+    // Thêm mới Lịch Học
+    public LichHoc addLichHoc(LichHocDTO lichHocDTO) {
         LichHoc lichHoc = convertToEntity(lichHocDTO);
-        LichHoc savedLichHoc = lichHocRepository.save(lichHoc);
-        return convertToDTO(savedLichHoc);
+        return lichHocRepository.save(lichHoc);
+    }
+
+    // Sửa Lịch Học
+    public LichHoc updateLichHoc(LichHocDTO lichHocDTO) {
+        // Kiểm tra tồn tại lịch học
+        LichHoc existingLichHoc = lichHocRepository.findById(lichHocDTO.getMaLichHoc())
+                .orElseThrow(() -> new RuntimeException("Lịch học không tồn tại với ID: " + lichHocDTO.getMaLichHoc()));
+
+        // Cập nhật các thông tin
+        existingLichHoc.setThoiGianBatDau(LocalDateTime.parse(lichHocDTO.getThoiGianBatDau()));
+        existingLichHoc.setThoiGianKetThuc(LocalDateTime.parse(lichHocDTO.getThoiGianKetThuc()));
+
+        LopHoc lopHoc = lopHocRepository.findById(lichHocDTO.getMaLopHoc())
+                .orElseThrow(() -> new RuntimeException("Lớp học không tồn tại!"));
+        MonHoc monHoc = monHocRepository.findById(lichHocDTO.getMaMonHoc())
+                .orElseThrow(() -> new RuntimeException("Môn học không tồn tại!"));
+        GiangVien giangVien = giangVienRepository.findById(lichHocDTO.getMaGiangVien())
+                .orElseThrow(() -> new RuntimeException("Giảng viên không tồn tại!"));
+
+        existingLichHoc.setLopHoc(lopHoc);
+        existingLichHoc.setMonHoc(monHoc);
+        existingLichHoc.setGiangVien(giangVien);
+
+        return lichHocRepository.save(existingLichHoc);
     }
 
     // Xóa Lịch Học
     public void deleteLichHoc(int maLichHoc) {
         lichHocRepository.deleteById(maLichHoc);
+    }
+
+    // Lấy Lịch Học theo ID
+    public LichHocDTO getLichHocById(int id) {
+        LichHoc lichHoc = lichHocRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lịch học không tồn tại với ID: " + id));
+        return convertToDTO(lichHoc);
     }
 
     // Ánh xạ từ Entity sang DTO
@@ -64,39 +94,25 @@ public class LichHocService {
     // Ánh xạ từ DTO sang Entity
     private LichHoc convertToEntity(LichHocDTO lichHocDTO) {
         LichHoc lichHoc = new LichHoc();
+
         if (lichHocDTO.getMaLichHoc() != 0) {
             lichHoc.setMaLichHoc(lichHocDTO.getMaLichHoc());
         }
+
         LopHoc lopHoc = lopHocRepository.findById(lichHocDTO.getMaLopHoc())
-                                        .orElseThrow(() -> new RuntimeException("LopHoc not found"));
+                .orElseThrow(() -> new RuntimeException("Lớp học không tồn tại!"));
         MonHoc monHoc = monHocRepository.findById(lichHocDTO.getMaMonHoc())
-                                        .orElseThrow(() -> new RuntimeException("MonHoc not found"));
+                .orElseThrow(() -> new RuntimeException("Môn học không tồn tại!"));
         GiangVien giangVien = giangVienRepository.findById(lichHocDTO.getMaGiangVien())
-                                                 .orElseThrow(() -> new RuntimeException("GiangVien not found"));
+                .orElseThrow(() -> new RuntimeException("Giảng viên không tồn tại!"));
 
         lichHoc.setLopHoc(lopHoc);
         lichHoc.setMonHoc(monHoc);
         lichHoc.setGiangVien(giangVien);
         lichHoc.setThoiGianBatDau(LocalDateTime.parse(lichHocDTO.getThoiGianBatDau()));
         lichHoc.setThoiGianKetThuc(LocalDateTime.parse(lichHocDTO.getThoiGianKetThuc()));
+
         return lichHoc;
-    }
-    // Phương thức để lấy lịch học theo ID
-    public LichHocDTO getLichHocById(int id) {
-        // Tìm kiếm lịch học trong cơ sở dữ liệu
-        LichHoc lichHoc = lichHocRepository.findById(id).orElseThrow(() -> new RuntimeException("Lịch học không tồn tại!"));
-
-        // Chuyển đổi LichHoc thành LichHocDTO (DTO có thể chứa các thông tin khác ngoài đối tượng gốc)
-        LichHocDTO lichHocDTO = new LichHocDTO();
-        lichHocDTO.setMaLichHoc(lichHoc.getMaLichHoc());
-        lichHocDTO.setMaLopHoc(lichHoc.getLopHoc().getMaLopHoc());
-        lichHocDTO.setMaMonHoc(lichHoc.getMonHoc().getMaMonHoc());
-        lichHocDTO.setMaGiangVien(lichHoc.getGiangVien().getMaGiangVien());
-        lichHocDTO.setThoiGianBatDau(lichHoc.getThoiGianBatDau());
-        lichHocDTO.setThoiGianKetThuc(lichHoc.getThoiGianKetThuc());
-
-        // Trả về DTO chứa thông tin của lịch học
-        return lichHocDTO;
     }
     
 }

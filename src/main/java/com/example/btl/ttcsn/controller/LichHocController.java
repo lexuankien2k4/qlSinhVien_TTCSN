@@ -18,77 +18,52 @@ import com.example.btl.ttcsn.service.LopHocService;
 import com.example.btl.ttcsn.service.MonHocService;
 
 @Controller
-@RequestMapping("/lich-hoc")
+@RequestMapping("/lichhoc")
 public class LichHocController {
-	@Autowired
-	private LichHocService lichHocService;
-	@Autowired
-	private MonHocService monHocService;
-	@Autowired
-	private GiangVienService giangVienService;
-	@Autowired
-	private LopHocService lopHocService;
-	
-    @GetMapping
-    public String getAllLichHoc(Model model) {
+    @Autowired
+    private LichHocService lichHocService;
+
+    // Hiển thị danh sách lịch học
+    @GetMapping()
+    public String listLichHoc(Model model) {
         List<LichHocDTO> lichHocList = lichHocService.getAllLichHoc();
         model.addAttribute("lichHocList", lichHocList);
-        return "lichhoc/lhList";
+        return "LichHoc/lhList"; // Đường dẫn tới file Thymeleaf hiển thị danh sách lịch học
     }
 
+    // Hiển thị form thêm mới lịch học
     @GetMapping("/add")
-    public String addLichHocForm(Model model) {
+    public String showAddForm(Model model) {
         model.addAttribute("lichHocDTO", new LichHocDTO());
-        model.addAttribute("lopHocs", lopHocService.getAllLopHoc());
-        model.addAttribute("monHocs", monHocService.getAllMonHoc());
-        model.addAttribute("giangViens", giangVienService.getAllGiangVien());
-        return "lichhoc/lhAdd";  // Trả về trang add.html
+        return "LichHoc/lhAdd"; // Đường dẫn tới file Thymeleaf cho form thêm lịch học
     }
 
-    // Xử lý thêm lịch học
+    // Xử lý thêm mới lịch học
     @PostMapping("/add")
-    public String addLichHoc(@ModelAttribute LichHocDTO lichHocDTO, Model model) {
-        try {
-            // Gọi service để thêm lịch học
-            lichHocService.saveLichHoc(lichHocDTO);
-
-            // Thêm thành công, chuyển hướng về trang danh sách lịch học hoặc trang thành công
-            return "redirect:/lich-hoc";  // Redirect về danh sách lịch học
-        } catch (Exception e) {
-            // Nếu có lỗi, trả lại thông báo lỗi
-            model.addAttribute("error", "Có lỗi xảy ra khi thêm lịch học.");
-            model.addAttribute("lichHocDTO", lichHocDTO);
-            model.addAttribute("lopHocs", lopHocService.getAllLopHoc());
-            model.addAttribute("monHocs", monHocService.getAllMonHoc());
-            model.addAttribute("giangViens", giangVienService.getAllGiangVien());
-            return "lichhoc/lhAdd";
-        }
+    public String addLichHoc(@ModelAttribute("lichHocDTO") LichHocDTO lichHocDTO) {
+        lichHocService.addLichHoc(lichHocDTO);
+        return "redirect:/lichhoc"; // Chuyển hướng về danh sách lịch học
     }
 
+    // Hiển thị form sửa lịch học
     @GetMapping("/edit/{id}")
-    public String editLichHocForm(@PathVariable("id") int id, Model model) {
-    	LichHocDTO lichHocDTO = lichHocService.getLichHocById(id);
-//        LichHocDTO lichHocDTO = lichHocService.getAllLichHoc()
-//                                              .stream()
-//                                              .filter(dto -> dto.getMaLichHoc() == id)
-//                                              .findFirst()
-//                                              .orElseThrow(() -> new RuntimeException("LichHoc not found"));
+    public String showEditForm(@PathVariable("id") int id, Model model) {
+        LichHocDTO lichHocDTO = lichHocService.getLichHocById(id);
         model.addAttribute("lichHocDTO", lichHocDTO);
-        model.addAttribute("lopHocs", lichHocService.getAllLichHoc());
-        model.addAttribute("monHocs", monHocService.getAllMonHoc());
-        model.addAttribute("giangViens", giangVienService.getAllGiangVien());
-        return "lichhoc/lhEdit";
+        return "LichHoc/lhEdit"; // Đường dẫn tới file Thymeleaf cho form sửa lịch học
     }
 
+    // Xử lý sửa lịch học
     @PostMapping("/edit")
-    public String updateLichHoc(@ModelAttribute("lichHocDTO") LichHocDTO lichHocDTO) {
-        lichHocService.saveLichHoc(lichHocDTO);
-        return "redirect:/lich-hoc";
+    public String editLichHoc(@ModelAttribute("lichHocDTO") LichHocDTO lichHocDTO) {
+        lichHocService.updateLichHoc(lichHocDTO);
+        return "redirect:/lichhoc"; // Chuyển hướng về danh sách lịch học
     }
 
+    // Xóa lịch học
     @GetMapping("/delete/{id}")
     public String deleteLichHoc(@PathVariable("id") int id) {
         lichHocService.deleteLichHoc(id);
-        return "redirect:/lich-hoc";
+        return "redirect:/lichhoc"; // Chuyển hướng về danh sách lịch học
     }
 }

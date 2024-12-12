@@ -35,7 +35,7 @@
 
 					<div class="row">
 						<div class="col-lg-3">
- <a th:href="@{/lich-hoc/add}">Thêm Lịch Học</a>
+ <a th:href="@{/lichhoc/add}">Thêm Lịch Học</a>
 						</div>
 					</div>
 			<div>
@@ -62,8 +62,8 @@
             <td th:text="${lichHoc.thoiGianBatDau}"></td>
             <td th:text="${lichHoc.thoiGianKetThuc}"></td>
             <td>
-                <a th:href="@{'/lich-hoc/edit/' + ${lichHoc.maLichHoc}}" class="btn btn-warning">Sửa</a>
-                <a th:href="@{'/lich-hoc/delete/' + ${lichHoc.maLichHoc}}" class="btn btn-danger">Xóa</a>
+                <a th:href="@{'/lichhoc/edit/' + ${lichHoc.maLichHoc}}" class="btn btn-warning">Sửa</a>
+                <a th:href="@{'/lichhoc/delete/' + ${lichHoc.maLichHoc}}" class="btn btn-danger">Xóa</a>
             </td>
         </tr>
         </tbody>

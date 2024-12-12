@@ -1,6 +1,9 @@
 package com.example.btl.ttcsn.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,5 +94,18 @@ public class KetQuaHocTapService {
     // Xóa kết quả học tập theo ID
     public void deleteKetQuaHocTapById(Integer id) {
         ketQuaHocTapRepository.deleteById(id);
+    }
+    public List<Map<String, Object>> getMonHocWithHighScores(float minScore) {
+        List<Object[]> results = ketQuaHocTapRepository.findMonHocWithHighScores(minScore);
+
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] row : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("monHoc", row[0]);
+            map.put("avgDiem", row[1]);
+            response.add(map);
+        }
+
+        return response;
     }
 }

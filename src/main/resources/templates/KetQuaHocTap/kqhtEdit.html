@@ -28,7 +28,7 @@
 
     <!-- Main content -->
     <h1>Sửa Kết Quả Học Tập</h1>
-<form th:action="@{/ketquahoctap/add}" th:object="${ketQuaHocTap}" method="post">
+<form th:action="@{/ketquahoctap/edit}" th:object="${ketQuaHocTap}" method="post">
     <label>Chọn Sinh viên:</label>
     <select th:field="*{maSinhVien}">
         <option th:each="sinhVien : ${sinhVienList}" th:value="${sinhVien.maSinhVien}" th:text="${sinhVien.hoTen}"></option>
@@ -42,7 +42,7 @@
     <label>Điểm:</label>
     <input type="number" step="0.1" min="0" max="10" th:field="*{diem}" required />
 
-    <button type="submit">Thêm Kết quả học tập</button>
+    <button type="submit">Sửa quả học tập</button>
 </form>
     <!-- /.content -->
   </div>
