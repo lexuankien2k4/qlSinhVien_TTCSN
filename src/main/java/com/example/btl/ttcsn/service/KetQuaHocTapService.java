@@ -2,6 +2,7 @@ package com.example.btl.ttcsn.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,17 +96,28 @@ public class KetQuaHocTapService {
     public void deleteKetQuaHocTapById(Integer id) {
         ketQuaHocTapRepository.deleteById(id);
     }
-    public List<Map<String, Object>> getMonHocWithHighScores(float minScore) {
-        List<Object[]> results = ketQuaHocTapRepository.findMonHocWithHighScores(minScore);
+    public Object[] getMostFrequentScore() {
+        List<Object[]> scores = ketQuaHocTapRepository.getMostFrequentScores();
+        return scores.isEmpty() ? null : scores.get(0); // Lấy đầu điểm xuất hiện nhiều nhất
+    }
+    public long[] getStatistics() {
+        long[] statistics = new long[11]; // Array để lưu số lượng từ điểm 0 đến 10
 
-        List<Map<String, Object>> response = new ArrayList<>();
-        for (Object[] row : results) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("monHoc", row[0]);
-            map.put("avgDiem", row[1]);
-            response.add(map);
+        List<KetQuaHocTap> results = ketQuaHocTapRepository.findAll();
+        for (KetQuaHocTap result : results) {
+            int score = result.getDiem().intValue();
+            if (score >= 0 && score <= 10) {
+                statistics[score]++;
+            }
         }
-
-        return response;
+        return statistics;
+    }
+    public Map<Float, Long> getDiemStatistics() {
+        List<Object[]> results = ketQuaHocTapRepository.countDiemGroupByDiem();
+        Map<Float, Long> stats = new LinkedHashMap<>();
+        for (Object[] result : results) {
+            stats.put((Float) result[0], (Long) result[1]);
+        }
+        return stats;
     }
 }

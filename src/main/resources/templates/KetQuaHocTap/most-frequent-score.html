@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thống kê đầu điểm phổ biến nhất</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h1>Thống kê đầu điểm phổ biến nhất</h1>
+
+<div th:if="${score != null}">
+    <p>Điểm: <span th:text="${score[0]}"></span></p>
+    <p>Số lần xuất hiện: <span th:text="${score[1]}"></span></p>
+    <canvas id="chart"></canvas>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const score = /*[[${score[0]}]]*/ 0;
+            const count = /*[[${score[1]}]]*/ 0;
+
+            new Chart(document.getElementById('chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Điểm', 'Khác'],
+                    datasets: [{
+                        label: 'Thống kê đầu điểm',
+                        data: [count, 10 - count],
+                        backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        });
+    </script>
+</div>
+
+<div th:if="${score == null}">
+    <p>Không có dữ liệu để thống kê.</p>
+</div>
+</body>
+</html>

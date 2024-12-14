@@ -1,6 +1,7 @@
 package com.example.btl.ttcsn.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -80,6 +81,24 @@ public class KetQuaHocTapController {
     public String deleteKetQuaHocTap(@PathVariable("id") Integer id) {
         ketQuaHocTapService.deleteKetQuaHocTapById(id);
         return "redirect:/ketquahoctap";
+    }
+//    @GetMapping("/statistics")
+//    public String getStatistics(Model model) {
+//        List<Object[]> statistics = ketQuaHocTapService.getAverageScoresByStudent();
+//        model.addAttribute("statistics", statistics);
+//        return "KetQuaHocTap/statistics";
+//    }
+    @GetMapping("/statistics/frequent")
+    public String getMostFrequentScore(Model model) {
+        Object[] mostFrequentScore = ketQuaHocTapService.getMostFrequentScore();
+        model.addAttribute("score", mostFrequentScore);
+        return "KetQuaHocTap/most-frequent-score";
+    }
+    @GetMapping("/statistics")
+    public String getStatistics(Model model) {
+        Map<Float, Long> statistics = ketQuaHocTapService.getDiemStatistics();
+        model.addAttribute("statistics", statistics);
+        return "KetQuaHocTap/statistics";
     }
 
     
